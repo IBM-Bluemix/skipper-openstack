@@ -2,16 +2,28 @@ var pkgcloud = require("pkgcloud"),
     Writable = require("stream").Writable,
     _ = require("underscore");
 
-function getClient(credentials) {
-  return pkgcloud.storage.createClient({
-       provider: 'openstack',
+function getClient(credentials, version) {
+  if (version == 1){
+    var clientInfo = {
+      provider: 'openstack',
+      username: credentials.userId,
+      password: credentials.password,
+      authUrl: credentials.auth_url,
+      version: 1, 
+      useServiceCatalog: false
+    }
+  }else{
+    var clientInfo = {
+      provider: 'openstack',
        username: credentials.userId,
        password: credentials.password,
        authUrl: credentials.auth_url,
        tenantId: credentials.projectId,
        region: credentials.region,
        version: "2"
-  });
+    }
+  }
+  return pkgcloud.storage.createClient(clientInfo);
 }
 
 module.exports = function SwiftStore(globalOpts) {
@@ -20,7 +32,7 @@ module.exports = function SwiftStore(globalOpts) {
     var adapter = {
 
         read: function(options, file, response) {
-            var client = getClient(options.credentials);
+            var client = getClient(options.credentials, options.version);
             client.download({
                 container: options.container,
                 remote: file,
@@ -31,7 +43,7 @@ module.exports = function SwiftStore(globalOpts) {
         rm: function(fd, cb) { return cb(new Error('TODO')); },
 
         ls: function(options, callback) {
-            var client = getClient(options.credentials);
+            var client = getClient(options.credentials, options.version);
 
             client.getFiles(options.container, function (error, files) {
                 return callback(error, files);
@@ -44,7 +56,7 @@ module.exports = function SwiftStore(globalOpts) {
             });
 
             receiver._write = function onFile(__newFile, encoding, done) {
-                var client = getClient(options.credentials);
+                var client = getClient(options.credentials, options.version);
                 console.log("Uploading file with name", __newFile.filename);
                 __newFile.pipe(client.upload({
                     container: options.container,
@@ -70,8 +82,8 @@ module.exports = function SwiftStore(globalOpts) {
 
             return receiver;
         },
-        ensureContainerExists: function(credentials, containerName, callback) {
-          var client = getClient(credentials);
+        ensureContainerExists: function(credentials, containerName, version, callback) {
+          var client = getClient(credentials, version);
 
           client.getContainers(function (error, containers) {
             if (error) {
