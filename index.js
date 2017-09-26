@@ -43,12 +43,36 @@ module.exports = function SwiftStore(globalOpts) {
                 objectMode: true
             });
 
+            function __uuidGenerate(){
+              this.length = 8;
+               this.timestamp = +new Date;
+               var _getRandomInt = function (min, max) {
+                 return Math.floor(Math.random() * (max - min + 1)) + min;
+               }
+
+               var ts = this.timestamp.toString();
+               var parts = ts.split("").reverse();
+               var id = "";
+
+               for (var i = 0; i < this.length; ++i) {
+                 var index = _getRandomInt(0, parts.length - 1);
+                 id += parts[index];
+               }
+               return id;
+            }
+
+              var uuid = __uuidGenerate()
+
             receiver._write = function onFile(__newFile, encoding, done) {
+                var newFilename = __newFile
+
+                newFilename.filename = uuid + newFilename.filename
+
                 var client = getClient(options.credentials);
-                console.log("Uploading file with name", __newFile.filename);
+                console.log("Uploading file with name", newFilename.filename);
                 __newFile.pipe(client.upload({
                     container: options.container,
-                    remote: __newFile.filename
+                    remote: newFilename.filename
                 }, function(err, value) {
                   console.log(err);
                   console.log(value);
@@ -61,7 +85,7 @@ module.exports = function SwiftStore(globalOpts) {
                 }));
 
                 __newFile.on("end", function(err, value) {
-                  console.log("finished uploading", __newFile.filename);
+                  console.log("finished uploading", __newFile.fd);
                     receiver.emit('finish', err, value );
                     done();
                 });
