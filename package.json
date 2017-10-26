@@ -1,5 +1,5 @@
 {
-  "name": "skipper-openstack",
+  "name": "skipper-openstack-gremi",
   "version": "0.0.1",
   "dependencies": {
     "pkgcloud": "git+https://github.com/IBM-Bluemix/pkgcloud.git#fix-openstack-auth",
@@ -8,8 +8,7 @@
   },
   "main": "index.js",
   "repository": {
-    "type": "git",
-    "url": "https://github.com/IBM-Bluemix/skipper-openstack.git"
+    "type": "git"
   },
   "keywords": [
     "openstack-swift",
@@ -24,13 +23,13 @@
   ],
   "author": [
     {
-      "name": "Jeff Sloyer",
-      "email": "jbsloyer@us.ibm.com"
+      "name": "Thalles Gremi",
+      "email": "thallesgremi@gmail.com"
     }
   ],
   "license": "Apache License V2",
   "bugs": {
-    "url": "https://github.com/IBM-Bluemix/skipper-openstack/issues"
+    "url": "https://github.com/tgremi/skipper-openstack/issues"
   },
-  "homepage": "https://github.com/IBM-Bluemix/skipper-openstack"
+  "homepage": "https://github.com/tgremi/skipper-openstack"
 }
